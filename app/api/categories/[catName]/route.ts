@@ -2,9 +2,10 @@ import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prismadb";
 
 
-export const GET = async (request: NextRequest,
-    {params}: {params: { catName: string }}
-) => { const {catName} = params;
+export async function GET(
+    req: NextRequest,
+    { params }: { params: Promise<{ catName: string }> }
+) { const { catName } = await params;
     try {
         const posts = await prisma.category.findUnique({
             where: { catName },

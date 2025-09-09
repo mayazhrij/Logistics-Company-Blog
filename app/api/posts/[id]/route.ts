@@ -1,14 +1,13 @@
 import { prisma } from "@/lib/prismadb";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]/route";
 
 
-export async function GET(req: Request,
-    {params}: {params: { id: string }}
-) {
+export async function GET(req: NextRequest,
+    {params}: {params: Promise<{ id: string }> }
+) { const {id} = await params;
     try {
-        const id = params.id
         const post = await prisma.post.findUnique({ where: { id } });
         return NextResponse.json(post);
     } catch (error) {
@@ -17,8 +16,8 @@ export async function GET(req: Request,
     }
 };
 
-export async function PUT(req: Request,
-    {params}: {params: { id: string }}
+export async function PUT(req: NextRequest,
+    {params}: {params: Promise<{ id: string }> }
 ) {
     const session = await getServerSession(authOptions);
     
@@ -28,7 +27,7 @@ export async function PUT(req: Request,
 
     const {title, content, links, selectedCategory, imageUrl, publicId} =
         await req.json();
-    const id = params.id;
+    const {id} = await params;
 
     try {
         const post = await prisma.post.update({
@@ -53,8 +52,8 @@ export async function PUT(req: Request,
 };
 
 export async function DELETE(
-    req: Request,
-    {params}: {params: { id: string }}
+    req: NextRequest,
+    {params}: {params: Promise<{ id: string }> }
 ) {
     const session = await getServerSession(authOptions);
 
@@ -62,7 +61,7 @@ export async function DELETE(
         return NextResponse.json({error: "Not authenticated"}, {status: 401});
     }
 
-    const id = params.id;
+    const {id} = await params;
     try {
         const post = await prisma.post.delete({ where: { id } });
         return NextResponse.json(post);
