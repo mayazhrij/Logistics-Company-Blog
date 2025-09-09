@@ -5,10 +5,9 @@ import { prisma } from "@/lib/prismadb";
 
 
 export async function GET(request: NextRequest,
-    context:
-    { params: Promise<{ email: string }> }) {
+    { params }: { params: Promise<{ email: string }> }) {
     try {
-        const {email}  = await context.params;
+        const {email}  = await params;
         const posts = await prisma.user.findUnique({
             where: { email },
             include: {
